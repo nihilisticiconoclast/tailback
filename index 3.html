@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tailback &mdash; braking cascades and the Borel distribution</title>
+    <meta
+      name="description"
+      content="A stylised highway circuit where one car's braking cascades into a tailback. Cascade sizes follow a Borel distribution."
+    />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="gantry">
+        <div class="gantry__brand">
+          <h1 class="gantry__title">Tailback</h1>
+          <p class="gantry__sub">One car brakes. Count how many have to.</p>
+        </div>
+
+        <div class="gantry__metrics">
+          <div class="metric">
+            <span class="metric__label">Flow</span>
+            <span class="metric__value" id="m-flow">&mdash;</span>
+          </div>
+          <div class="metric">
+            <span class="metric__label">Density</span>
+            <span class="metric__value" id="m-density">&mdash;</span>
+          </div>
+          <div class="metric">
+            <span class="metric__label">Headway</span>
+            <span class="metric__value" id="m-headway">&mdash;</span>
+          </div>
+          <div class="metric metric--critical" id="m-mu-block">
+            <span class="metric__label">&mu; = flow &times; clearance</span>
+            <span class="metric__value" id="m-mu">&mdash;</span>
+            <div class="capacity" id="m-capacity">
+              <div class="capacity__fill" id="m-capacity-fill"></div>
+              <div class="capacity__mark"></div>
+            </div>
+          </div>
+          <div class="metric">
+            <span class="metric__label">Expected cascade</span>
+            <span class="metric__value" id="m-mean">&mdash;</span>
+          </div>
+          <div class="metric">
+            <span class="metric__label">Clears</span>
+            <span class="metric__value" id="m-clears">&mdash;</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="shell">
+        <aside class="rail">
+          <h2 class="rail__heading">Road</h2>
+          <div class="controls" id="controls"></div>
+
+          <h2 class="rail__heading">Run</h2>
+          <div class="rail__actions">
+            <button type="button" id="btn-play" aria-pressed="true">Pause</button>
+            <button type="button" id="btn-reset">Clear samples</button>
+            <button type="button" id="btn-log" aria-pressed="false">Log scale</button>
+          </div>
+          <label class="seed">
+            Seed
+            <input type="number" id="seed" value="20260731" step="1" />
+          </label>
+
+          <p class="note">
+            <strong>&mu; is the whole story.</strong> It is the expected number of extra cars a
+            single braking car forces to brake. Below 1, cascades die out and their length is
+            Borel(&mu;). At 1 they still end, but the mean is infinite. Above 1, some never end.
+          </p>
+        </aside>
+
+        <div class="stage">
+          <section class="panel">
+            <div class="panel__head">
+              <h2 class="panel__title">Circuit</h2>
+              <span class="panel__aside" id="stage-status">&mdash;</span>
+            </div>
+            <div class="panel__body"><canvas id="circuit"></canvas></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel__head">
+              <h2 class="panel__title">Cascade size</h2>
+              <span class="panel__aside" id="chart-status">&mdash;</span>
+            </div>
+            <div class="panel__body"><canvas id="histogram"></canvas></div>
+            <div class="legend">
+              <span class="legend__key"
+                ><span class="legend__swatch legend__swatch--observed"></span>observed</span
+              >
+              <span class="legend__key"><span class="legend__swatch"></span>Borel prediction</span>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

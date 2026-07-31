@@ -1,0 +1,12 @@
+{
+  "name": "tailback",
+  "version": "0.1.0",
+  "description": "Braking cascades on a stylised highway circuit, and the Borel distribution that counts them",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node test/smoke.mjs",
+    "serve": "python3 -m http.server 8000"
+  },
+  "license": "MIT"
+}
