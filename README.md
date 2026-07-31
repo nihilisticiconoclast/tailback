@@ -89,7 +89,7 @@ js/rng.js           seeded RNG, Poisson sampler
 js/queue.js         M/D/1 busy period: fast counter and tree-building variants
 js/model.js         slider spec, and the traffic parameters → μ mapping
 js/controls.js      builds the rail from the spec
-js/circuit.js       stadium geometry, cars, tailback, cascade tree
+js/circuit.js       stadium geometry, the live M/D/1 simulation, the tree
 js/chart.js         histogram with the Borel overlay
 test/smoke.mjs      distribution and simulator checks
 MODEL.md            the derivation and the modelling assumptions
@@ -97,6 +97,19 @@ MODEL.md            the derivation and the modelling assumptions
 
 The maths is separated from the rendering deliberately: `borel.js`, `queue.js`,
 `rng.js` and `model.js` have no DOM dependency and are directly testable in Node.
+
+## One lane is the point
+
+A single lane is exactly the setting in which the answer is Borel. The model is
+an M/D/1 queue — Poisson arrivals, deterministic service, one server — and the
+number served in one busy period of an M/D/1 queue is Borel($\mu$). That is a
+theorem, and it wants one lane, not several.
+
+Adding lanes would not make it more truly Borel; it would break it. A braking car
+could then trigger cars beside it as well as behind, the number it catches would
+stop being Poisson, and the total would stop being Borel. Earlier versions of
+this file listed multiple lanes as an extension in a way that implied the
+opposite, which was wrong.
 
 ## Restyling
 
@@ -121,17 +134,12 @@ together.
 
 ## Where to take it
 
-**Make the circuit produce the statistic, rather than stage it.** Right now the
-histogram comes from an exact M/D/1 sampler and the circuit renders a draw from
-it. Replacing that with genuine car-following — cars stop when they reach the
-back of the queue, and *their* arrivals drive the branching — is the most
-interesting extension, because on a closed loop with no overtaking the arrival
-process is not Poisson. The realised distribution should track Borel at low
-density and depart from it as the loop fills. Plotting both empirical laws
-against the theory would make the departure the point of the piece.
-
-**Multiple lanes**, so a braking car can trigger sympathetic braking sideways as
-well as behind, and the offspring distribution stops being a chain.
+**A longer loop.** The circuit's cascades come out about a tenth smaller in the
+mean than Borel, entirely because a loop of 45 cars cannot host the rare enormous
+cascades the mean depends on. Nothing is wrong with the mechanism — the measured
+offspring distribution is Poisson($\mu$) to three decimal places — it is the
+population that is finite. More cars on a proportionally longer loop closes the
+gap; at 200 cars it is down to 6%.
 
 **Borel–Tanner**, seeding a cascade with $k$ simultaneous brakers. The PMF is
 already implemented in `borel.js` and unused; it needs a slider and a change to

@@ -163,18 +163,39 @@ buys nothing.
 The histogram is fed by the exact M/D/1 sampler and converges to Borel. That
 part is honest.
 
-The circuit **stages** a cascade drawn from that same sampler: it takes the
-sampled size, then queues cars behind the disturbance and releases them one per
-$D$ seconds until that many have gone through. What you see is a faithful
-rendering of a real draw, but it is not an independent microsimulation, and the
-cars on screen are not what produced the number.
+The circuit is now a simulation too, not a rendering of a number computed
+elsewhere. A car is caught when it would reach the disturbance while the server
+is still working,
 
-Making them the same thing is the first extension below, and it is more
-interesting than it sounds, because on a closed loop with no overtaking the
-arrival process at the disturbance is **not** Poisson. Cars that were in the last
-platoon come round together. The realised distribution should sit close to Borel
-at low density and depart from it visibly as the loop fills — which is a result
-worth measuring rather than a bug to avoid.
+$$\text{now} + \frac{\text{distance}}{\text{speed}} < W,$$
+
+where $W$ is the instant everything caught so far will have cleared; catching a
+car pushes $W$ out by another $D$. That is the definition of a busy period. Each
+cascade's size is counted as it happens, and the tree records which car's
+clearance window caught which.
+
+Measured over 3000 cascades at $\mu = 0.700$, the number of cars the first
+braker catches is Poisson to three decimal places (mean $0.699$), and
+$P(N = n)$ matches Borel across the common sizes.
+
+Two things are idealised:
+
+**The queue is vertical.** It is drawn stretching back along the road so the
+tailback is legible, but it occupies no length in the arithmetic. This matters
+more than it sounds: catching a car when the physical tail reaches it, rather
+than when the car reaches the disturbance, adds $(\text{queue length})/v$ to
+every clearance window. At the defaults that lifts an intended $\mu = 0.70$
+above 1 and cascades stop terminating.
+
+**Released cars catch up.** A car leaving the queue is behind where the
+undisturbed stream would have put it, and closes the gap at $2.2v$. The stream
+itself is never perturbed by the queue, which is what keeps arrivals Poisson.
+
+The real limitation is the finite loop. Borel's mean is dominated by its tail,
+and 45 cars cannot produce a cascade of 200, so the circuit's cascades run about
+10% small in the mean while the common sizes stay right. The histogram samples
+the idealised process with no such cap, which is why it is the authority for the
+shape of the law.
 
 ## Generalisation
 

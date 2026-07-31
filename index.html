@@ -6,7 +6,7 @@
     <title>Tailback &mdash; braking cascades and the Borel distribution</title>
     <meta
       name="description"
-      content="A stylised highway circuit where one car's braking cascades into a tailback. Cascade sizes follow a Borel distribution."
+      content="A single-lane circuit where one car's braking cascades into a tailback. The number of cars caught follows a Borel distribution, simulated live."
     />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- The locked layer of the house style: palette and type, linked from the
@@ -19,8 +19,6 @@
     <link rel="stylesheet" href="css/app.css" />
   </head>
   <body data-seed="tailback">
-    <div class="doodle" id="doodle"></div>
-
     <div class="app">
       <header class="gantry">
         <div class="gantry__brand">
@@ -33,11 +31,11 @@
 
         <div class="gantry__metrics">
           <div class="metric">
-            <span class="metric__label">Flow</span>
+            <span class="metric__label">Flow <em>q</em></span>
             <span class="metric__value" id="m-flow">&mdash;</span>
           </div>
           <div class="metric">
-            <span class="metric__label">Density</span>
+            <span class="metric__label">Density <em>k</em></span>
             <span class="metric__value" id="m-density">&mdash;</span>
           </div>
           <div class="metric">
@@ -45,19 +43,20 @@
             <span class="metric__value" id="m-headway">&mdash;</span>
           </div>
           <div class="metric metric--critical" id="m-mu-block">
-            <span class="metric__label">&mu; = flow &times; clearance</span>
+            <span class="metric__label"><span class="sym">&mu;</span> = <em>q</em> &times; <em>D</em></span>
             <span class="metric__value" id="m-mu">&mdash;</span>
             <div class="capacity" id="m-capacity">
               <div class="capacity__fill" id="m-capacity-fill"></div>
               <div class="capacity__mark"></div>
             </div>
+            <span class="metric__foot" id="m-regime">&mdash;</span>
           </div>
           <div class="metric">
-            <span class="metric__label">Expected cascade</span>
+            <span class="metric__label">Mean cascade 1/(1&minus;<span class="sym">&mu;</span>)</span>
             <span class="metric__value" id="m-mean">&mdash;</span>
           </div>
           <div class="metric">
-            <span class="metric__label">Clears</span>
+            <span class="metric__label">Cascade ends</span>
             <span class="metric__value" id="m-clears">&mdash;</span>
           </div>
         </div>
@@ -65,7 +64,7 @@
 
       <main class="shell">
         <aside class="rail">
-          <h2 class="rail__heading">Road</h2>
+          <h2 class="rail__heading">The road</h2>
           <div class="controls" id="controls"></div>
 
           <h2 class="rail__heading">Run</h2>
@@ -80,52 +79,177 @@
           </label>
 
           <p class="note">
-            <strong>&mu; is the whole story.</strong> It is the expected number of extra cars a
-            single braking car forces to brake. Below 1, cascades die out and their length is
-            Borel(&mu;). At 1 they still end, but the mean is infinite. Above 1, some never end.
+            <strong>&mu; is the whole story.</strong> It is the expected number of cars a single
+            braking car forces to brake. Below 1 a cascade dies out and its length is
+            Borel(&mu;). At 1 it still ends, but the mean is infinite. Above 1 some cascades
+            never end. The four sliders above are just four ways of moving &mu;.
           </p>
         </aside>
 
         <div class="stage">
           <section class="panel">
             <div class="panel__head">
-              <h2 class="panel__title">Circuit</h2>
+              <h2 class="panel__title">Circuit &mdash; one cascade, simulated</h2>
               <span class="panel__aside" id="stage-status">&mdash;</span>
             </div>
             <div class="panel__body"><canvas id="circuit"></canvas></div>
+            <p class="panel__foot" id="live-tally">&mdash;</p>
           </section>
 
           <section class="panel">
             <div class="panel__head">
-              <h2 class="panel__title">Cascade size</h2>
+              <h2 class="panel__title">Cascade size &mdash; the same rule, run millions of times</h2>
               <span class="panel__aside" id="chart-status">&mdash;</span>
             </div>
             <div class="panel__body"><canvas id="histogram"></canvas></div>
             <div class="legend">
               <span class="legend__key"
-                ><span class="legend__swatch legend__swatch--observed"></span>observed</span
+                ><span class="legend__swatch legend__swatch--observed"></span>simulated</span
               >
-              <span class="legend__key"><span class="legend__swatch"></span>Borel prediction</span>
+              <span class="legend__key"><span class="legend__swatch"></span>Borel(&mu;) prediction</span>
+              <span class="legend__key"
+                ><span class="legend__swatch legend__swatch--live"></span>cascades run on the circuit
+                above</span
+              >
             </div>
           </section>
         </div>
       </main>
     </div>
 
+    <article class="explain">
+      <div class="explain__inner">
+        <p class="eyebrow">What you are looking at</p>
+        <h2>Why the count is Borel</h2>
+
+        <p class="lede">
+          One lane, no overtaking, and one point on the road where a car has to slow down. That
+          is the entire model, and it is enough to produce an exact, named distribution.
+        </p>
+
+        <p>
+          A car reaches the disturbance and takes <em>D</em> seconds to get through it &mdash; the
+          <strong>clearance time</strong>. For those <em>D</em> seconds nothing behind it can pass,
+          so every car that arrives during the window has to stop as well. Each of those cars then
+          takes its own <em>D</em> seconds, catching whoever arrives during <em>its</em> window,
+          and so on. The cascade ends at the moment the queue empties.
+        </p>
+
+        <p>
+          Now count arrivals. If cars pass the point at a rate <em>q</em> per second, the number
+          arriving during one <em>D</em>-second window is Poisson with mean
+        </p>
+
+        <p class="display">&mu; = <em>q</em> &times; <em>D</em></p>
+
+        <p>
+          Consecutive windows do not overlap, so those counts are independent. Draw a node for each
+          car caught, joined to the car whose window caught it, and you have a
+          <strong>Galton&ndash;Watson tree with Poisson(&mu;) offspring</strong> &mdash; that is the
+          shape being drawn in the infield as the cascade runs. The total number of cars in the
+          cascade is the total progeny of that tree, and total progeny of a Poisson branching
+          process is exactly the <strong>Borel distribution</strong>:
+        </p>
+
+        <p class="display">P(<em>N</em> = <em>n</em>) = e<sup>&minus;&mu;<em>n</em></sup> (&mu;<em>n</em>)<sup><em>n</em>&minus;1</sup> / <em>n</em>!</p>
+
+        <p>
+          &mu; is the expected number of cars one braking car forces to brake, so it decides
+          everything. Below&nbsp;1 each car replaces itself less than once over and the cascade
+          dies out, with mean size 1/(1&nbsp;&minus;&nbsp;&mu;) &mdash; that is the number on the
+          gantry. At exactly&nbsp;1 every cascade still ends, but the mean size is infinite: the
+          tail falls off only as <em>n</em><sup>&minus;3/2</sup>, so arbitrarily large jams stay
+          common. Above&nbsp;1 a cascade survives forever with probability 1&nbsp;&minus;&nbsp;<em>q</em>,
+          and the histogram switches to the law for the ones that do clear.
+        </p>
+
+        <h3>One lane is the point, not a shortcut</h3>
+
+        <p>
+          It is worth being clear about this, because the repository used to suggest otherwise:
+          <strong>a single lane is exactly the setting in which the answer is Borel.</strong> What
+          is being simulated is an M/D/1 queue &mdash; Poisson arrivals, deterministic service,
+          one server &mdash; and the number of cars served in one busy period of an M/D/1 queue is
+          Borel(&mu;). That is a theorem, and it needs one lane, not several.
+        </p>
+
+        <p>
+          Adding lanes would not make the model more truly Borel; it would break it. A braking car
+          could then trigger cars beside it as well as behind, the number it catches would stop
+          being Poisson, and the total would stop being Borel. That is a legitimate and interesting
+          model &mdash; it is just a different one, and it has no closed form this tidy. The older
+          note in this repository listing multiple lanes as the route to a &ldquo;true&rdquo; Borel
+          had it backwards, and has been corrected.
+        </p>
+
+        <h3>What is exact here and what is not</h3>
+
+        <p>
+          The circuit is a genuine simulation, not an animation of a precomputed answer. A car is
+          caught if it would reach the disturbance while the server is still working &mdash; the
+          definition of a busy period &mdash; and the tree records which car&rsquo;s clearance
+          window caught it. Each cascade&rsquo;s size is counted as it happens. Measured over three
+          thousand cascades, the number of cars the first braker catches comes out Poisson to three
+          decimal places (mean 0.699 against &mu;&nbsp;=&nbsp;0.700), and P(<em>N</em>&nbsp;=&nbsp;<em>n</em>)
+          tracks Borel across the small sizes. The mechanism is the real one.
+        </p>
+
+        <p>
+          Two things are idealised, and it is worth knowing which. The queue is a
+          <strong>vertical queue</strong>: it is drawn stretching back along the road so the
+          tailback is legible, but as far as the arithmetic is concerned it occupies no length.
+          Letting it occupy real length would mean cars were caught the moment the tail reached
+          them rather than when they reached the disturbance, which is a different and larger
+          number &mdash; it lifts an intended &mu; of 0.70 above 1, and the cascades stop ending.
+          Second, a car released from the queue is behind where the undisturbed traffic would have
+          put it, and closes that gap at a little over cruising speed, which is what real traffic
+          does leaving a jam.
+        </p>
+
+        <p>
+          One thing that surprises people: cars turn amber a long way back. A cascade&rsquo;s fate is
+          settled the moment it starts &mdash; whether a car gets caught depends only on whether it
+          would reach the disturbance before the queue drains, and that is decided by where it
+          already is. So a car is drawn amber from the instant the cascade has claimed it, which can
+          be most of a minute before it arrives, and red once it is actually stopped. The amber
+          stretch is the reach of the cascade made visible.
+        </p>
+
+        <p>
+          The genuine limitation is that the loop holds a fixed number of cars. Borel has a very
+          long tail &mdash; its mean is dominated by rare enormous cascades &mdash; and a loop of
+          45 cars simply cannot host a cascade of 200. So the circuit&rsquo;s cascades come out
+          about a tenth smaller in the mean than the theory, entirely through the missing tail; the
+          common sizes are right. That is why the histogram samples the idealised process
+          separately, with no cap on how many cars can be caught, and why it is the one to trust
+          for the shape of the law.
+        </p>
+
+        <h3>Things worth trying</h3>
+
+        <p>
+          Raise <strong>clearance time</strong> until &mu; passes 1 and watch the queue stop
+          draining. Hold &mu; fixed but trade <strong>cars</strong> against
+          <strong>circuit length</strong> &mdash; the distribution should not move, because only
+          the product <em>q</em>&thinsp;&times;&thinsp;<em>D</em> matters. Switch to
+          <strong>log scale</strong> near &mu;&nbsp;=&nbsp;1 to see the straight-line
+          <em>n</em><sup>&minus;3/2</sup> tail. Then push the density high and watch the simulated
+          cascades on the circuit pull away from the theory, which is the closed loop asserting
+          itself.
+        </p>
+      </div>
+    </article>
+
     <script src="https://cdn.jsdelivr.net/gh/nihilisticiconoclast/cuddly-lamp@main/assets/tunnel-figure.js"></script>
     <script>
-      // The fixed house mark in the masthead, and one seeded doodle in the
-      // margin. Seeded from the page, never from Math.random, so the scribble
-      // is this project's and stays put across reloads.
+      // The fixed house mark only. The seeded margin doodle was dropped: it sat
+      // over the circuit canvas, where a stray contour line reads as part of the
+      // diagram rather than as decoration.
       (function () {
         if (!window.TunnelFigure) return;
-        var seed = document.body.dataset.seed || location.pathname || document.title;
         document.getElementById('sig').innerHTML = TunnelFigure.tunnelFigureSVG(null, {
           variant: 'mark',
         });
-        var doodle = document.getElementById('doodle');
-        doodle.innerHTML = TunnelFigure.tunnelFigureSVG(seed, { variant: 'doodle' });
-        TunnelFigure.placeDoodle(doodle, { seed: seed });
       })();
     </script>
     <script type="module" src="js/main.js"></script>

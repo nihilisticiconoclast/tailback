@@ -13,16 +13,25 @@
 
 import { poissonSample } from './rng.js';
 
-/** Fast path: total progeny only, no allocation. Used to fill the histogram. */
-export function sampleBusyPeriod(mu, rand, cap = 200000) {
+/**
+ * Fast path: total progeny only, no allocation. Used to fill the histogram.
+ *
+ * Above criticality a busy period survives forever with probability 1 - q, so
+ * this has to give up somewhere. `cap` is that point, and reaching it is
+ * reported as "never cleared" rather than as a size. It also returns the number
+ * of services simulated, because that — not the number of samples — is what the
+ * caller has to budget: one draw at mu = 3 costs thousands of times more than
+ * one at mu = 0.7.
+ */
+export function sampleBusyPeriod(mu, rand, cap = 20000) {
   let served = 0;
   let inSystem = 1;
   while (inSystem > 0) {
     served += 1;
     inSystem += poissonSample(mu, rand) - 1;
-    if (served >= cap) return { size: served, cleared: false };
+    if (served >= cap) return { size: served, cleared: false, steps: served };
   }
-  return { size: served, cleared: true };
+  return { size: served, cleared: true, steps: served };
 }
 
 /**
@@ -88,11 +97,28 @@ export class CascadeSampler {
     else this.overflow += 1;
   }
 
-  drawBatch(mu, rand, batch) {
-    for (let i = 0; i < batch; i += 1) {
-      const { size, cleared } = sampleBusyPeriod(mu, rand);
+  /**
+   * Draw for a fixed amount of *work*, not a fixed number of samples.
+   *
+   * Sampling a fixed count is what used to lock the page up: at mu = 1.47 a
+   * batch of 320 took about three seconds, every frame, because most draws ran
+   * to the cap and each service costs another Poisson variate of mean mu. A
+   * work budget spends the same time per frame at every mu — above criticality
+   * the histogram simply fills more slowly, which is the honest outcome.
+   *
+   * Returns the number of samples actually taken.
+   */
+  drawBatch(mu, rand, unitBudget = 12000) {
+    const perStep = 1 + Math.min(mu, 30);
+    let used = 0;
+    let taken = 0;
+    do {
+      const { size, cleared, steps } = sampleBusyPeriod(mu, rand);
       this.record(size, cleared);
-    }
+      used += steps * perStep;
+      taken += 1;
+    } while (used < unitBudget);
+    return taken;
   }
 
   get total() {

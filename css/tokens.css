@@ -45,6 +45,10 @@
   --observed: var(--incident);
   --theory: var(--route);
 
+  /* Cascades actually run on the circuit, ticked under the histogram axis. Ink
+     rather than a fourth hue: it is a measurement, not another category. */
+  --live: var(--ink);
+
   --font-ui: var(--font-body);
   --font-mono: var(--font-data);
 

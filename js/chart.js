@@ -32,7 +32,7 @@ export class Histogram {
     this.h = rect.height;
   }
 
-  draw(sampler, muEff, nMax) {
+  draw(sampler, muEff, nMax, liveSizes = []) {
     const ctx = this.ctx;
     const theme = {
       grid: css('--kerb'),
@@ -41,6 +41,7 @@ export class Histogram {
       dim: css('--chalk-dim'),
       observed: css('--observed'),
       theory: css('--theory'),
+      live: css('--live'),
       mono: css('--font-mono'),
     };
 
@@ -140,5 +141,21 @@ export class Histogram {
     }
     ctx.textAlign = 'left';
     ctx.fillText('cars caught in cascade', PAD.left, base + 19);
+
+    // the handful of cascades actually run on the circuit above
+    if (liveSizes.length > 0) {
+      ctx.strokeStyle = theme.live;
+      ctx.lineWidth = 1.5;
+      ctx.globalAlpha = 0.75;
+      ctx.beginPath();
+      for (const size of liveSizes) {
+        if (size < 1 || size > nMax) continue;
+        const x = Math.round(toX(size) + barW / 2) + 0.5;
+        ctx.moveTo(x, base + 1);
+        ctx.lineTo(x, base + 5);
+      }
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
   }
 }

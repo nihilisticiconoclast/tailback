@@ -6,12 +6,7 @@
 
 html,
 body {
-  height: 100%;
-  /* The margin doodle is positioned to bleed into the gutter. tokens.css clips
-     it on <html>, but that alone leaves the page horizontally scrollable once
-     <body> is the offset parent, so clip here too. `clip` rather than `hidden`:
-     `hidden` would make <body> a scroll container and cut off the histogram. */
-  overflow-x: clip;
+  min-height: 100%;
 }
 
 body {
@@ -397,6 +392,97 @@ canvas {
   height: 9px;
   width: 5px;
   opacity: 0.75;
+}
+
+/* the regime caption under the capacity meter */
+.metric__foot {
+  display: block;
+  margin-top: 4px;
+  font-size: calc(var(--step--1) * 0.92);
+  color: var(--chalk-faint);
+  letter-spacing: 0.02em;
+}
+
+/* the running tally of cascades the circuit itself has completed */
+.panel__foot {
+  margin: 0;
+  padding: var(--gap-2) var(--gap-3) 0;
+  font-size: var(--step--1);
+  color: var(--chalk-dim);
+  line-height: 1.4;
+  max-width: 92ch;
+}
+
+.metric__label em,
+.rail em {
+  font-style: italic;
+}
+
+/* Greek and other symbols must escape the label's uppercasing: text-transform
+   turns a lowercase mu into a capital one, which reads as a Latin M. */
+.sym {
+  text-transform: none;
+}
+
+.legend__swatch--live {
+  background: var(--live);
+  width: 2px;
+  height: 10px;
+}
+
+/* ---------- explanation ---------- */
+
+.explain {
+  border-top: var(--hairline);
+  padding: var(--gap-4) var(--gap-3);
+}
+
+.explain__inner {
+  max-width: 68ch;
+  margin: 0 auto;
+}
+
+.explain h2 {
+  font-size: var(--step-3);
+  margin: 0 0 var(--gap-3);
+}
+
+.explain h3 {
+  font-size: var(--step-2);
+  margin: var(--gap-4) 0 var(--gap-2);
+}
+
+.explain p {
+  font-size: var(--step-1);
+  line-height: 1.6;
+  margin: 0 0 var(--gap-3);
+  max-width: none;
+}
+
+.explain .lede {
+  font-size: var(--step-2);
+  line-height: 1.45;
+  color: var(--chalk);
+}
+
+.explain em {
+  font-style: italic;
+}
+
+.explain strong {
+  font-weight: 600;
+  color: var(--chalk);
+}
+
+/* a formula gets its own line, set in the data face */
+.explain .display {
+  font-family: var(--font-mono);
+  font-size: var(--step-1);
+  text-align: center;
+  padding: var(--gap-2) 0;
+  border-top: var(--hairline);
+  border-bottom: var(--hairline);
+  color: var(--chalk);
 }
 
 .note {
