@@ -311,7 +311,8 @@
 
         <p>
           <strong>Seed</strong> re-scatters the cars and restarts both samplers, so a given seed
-          reproduces a given run exactly. <strong>Clear samples</strong> empties the histogram
+          reproduces a given run exactly &mdash; and, as above, gives you a different arrangement of
+          gaps to run cascades against. <strong>Clear samples</strong> empties the histogram
           without touching the road &mdash; useful straight after changing a slider.
           <strong>Log scale</strong> switches the vertical axis, which is the only way to see the
           tail properly.
@@ -374,9 +375,21 @@
           long tail &mdash; its mean is dominated by rare enormous cascades &mdash; and a loop of
           45 cars simply cannot host a cascade of 200. So the circuit&rsquo;s cascades come out
           about a tenth smaller in the mean than the theory, entirely through the missing tail; the
-          common sizes are right. That is why the histogram samples the idealised process
-          separately, with no cap on how many cars can be caught, and why it is the one to trust
-          for the shape of the law.
+          common sizes are right. Put 3000 cars on a proportionally longer loop and the gap closes
+          to about 1%.
+        </p>
+
+        <p>
+          There is a second effect, and it is the larger one for any single run. Every car travels
+          at the same speed, so the gaps between them never change: a given road is one fixed
+          arrangement of gaps, and cascades sample that arrangement rather than the ideal. How
+          closely it happens to match matters. Measured across eight different scatters of 45 cars,
+          the mean cascade ranged from a third below the theory to a seventh above it, a spread of
+          roughly &plusmn;16% around the average. So if the tally under the circuit sits stubbornly
+          off the predicted mean, that is the particular road you were given, not an error &mdash;
+          type a new <strong>Seed</strong> and you get a different one. This is exactly why the
+          histogram samples the idealised process separately, with fresh arrivals and no cap on how
+          many cars can be caught, and why it is the one to trust for the shape of the law.
         </p>
 
         <h3>Things worth trying</h3>

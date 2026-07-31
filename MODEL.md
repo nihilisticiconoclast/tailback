@@ -191,11 +191,21 @@ above 1 and cascades stop terminating.
 undisturbed stream would have put it, and closes the gap at $2.2v$. The stream
 itself is never perturbed by the queue, which is what keeps arrivals Poisson.
 
-The real limitation is the finite loop. Borel's mean is dominated by its tail,
-and 45 cars cannot produce a cascade of 200, so the circuit's cascades run about
-10% small in the mean while the common sizes stay right. The histogram samples
-the idealised process with no such cap, which is why it is the authority for the
-shape of the law.
+The real limitation is the finite loop, in two parts. Borel's mean is dominated by
+its tail, and 45 cars cannot produce a cascade of 200, so the circuit's cascades
+run about 10% small in the mean while the common sizes stay right; 3000 cars on a
+proportionally longer loop comes within 1%.
+
+The larger effect for any single run is that the gaps never change. All cars move
+at one speed, so a road is a fixed arrangement, and cascades resample that
+arrangement rather than the ideal process. Across eight scatters of 45 cars at
+$\mu = 0.700$ the mean ranged from $2.25$ to $3.80$ against a theoretical
+$3.333$ — a between-road standard deviation of $0.53$, or about $\pm 16\%$.
+Averaged over roads the bias is the $-12\%$ above; on one road it can be either
+sign.
+
+The histogram samples the idealised process with fresh arrivals and no cap, which
+is why it is the authority for the shape of the law.
 
 ## Generalisation
 

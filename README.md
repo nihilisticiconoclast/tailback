@@ -139,7 +139,13 @@ mean than Borel, entirely because a loop of 45 cars cannot host the rare enormou
 cascades the mean depends on. Nothing is wrong with the mechanism — the measured
 offspring distribution is Poisson($\mu$) to three decimal places — it is the
 population that is finite. More cars on a proportionally longer loop closes the
-gap; at 200 cars it is down to 6%.
+gap: 3000 cars on 160 km comes within about 1%.
+
+Worth pairing with a way to redraw the road. Every car runs at the same speed, so
+the gaps never change and one loop is one fixed arrangement; across eight scatters
+of 45 cars the mean ranged from −33% to +14% of the theory, a spread of about
+±16%. Re-seeding is the only way to resample that at present, and it also throws
+away the histogram, which it need not.
 
 **Borel–Tanner**, seeding a cascade with $k$ simultaneous brakers. The PMF is
 already implemented in `borel.js` and unused; it needs a slider and a change to
