@@ -52,7 +52,7 @@
             <span class="metric__foot" id="m-regime">&mdash;</span>
           </div>
           <div class="metric">
-            <span class="metric__label">Mean cascade 1/(1&minus;<span class="sym">&mu;</span>)</span>
+            <span class="metric__label">Mean cascade</span>
             <span class="metric__value" id="m-mean">&mdash;</span>
           </div>
           <div class="metric">
@@ -161,6 +161,160 @@
           tail falls off only as <em>n</em><sup>&minus;3/2</sup>, so arbitrarily large jams stay
           common. Above&nbsp;1 a cascade survives forever with probability 1&nbsp;&minus;&nbsp;<em>q</em>,
           and the histogram switches to the law for the ones that do clear.
+        </p>
+
+        <h3>What is on screen</h3>
+
+        <p>
+          The <strong>circuit</strong> is one cascade at a time, simulated. Traffic runs anticlockwise
+          on a single lane at a constant speed. When a braking event falls due, one car is picked at
+          random, stops where it is, and that spot becomes the disturbance for the duration &mdash;
+          which is why the marker moves around the loop rather than sitting in one place. Cars are
+          coloured by what has happened to them:
+        </p>
+
+        <dl class="defs">
+          <dt class="defs__term defs__term--flow">Teal</dt>
+          <dd>Running freely. Nothing has happened to this car.</dd>
+          <dt class="defs__term defs__term--amber">Amber</dt>
+          <dd>
+            Caught by the cascade, but not yet stopped &mdash; either still driving up to the back
+            of the queue, or just released and getting back up to speed.
+          </dd>
+          <dt class="defs__term defs__term--brake">Red</dt>
+          <dd>Stopped at the disturbance, waiting its turn to clear.</dd>
+        </dl>
+
+        <p>
+          The shape in the infield is the <strong>cascade tree</strong>, built as the cascade runs.
+          Each node is a car; a line joins a car to the one whose clearance window caught it. Nodes
+          are amber until that car has cleared the disturbance and red afterwards, so the tree fills
+          in from the left exactly as cars are released. Its width is how many cars were caught, and
+          its depth is how many rounds of knock-on braking that took.
+        </p>
+
+        <p>
+          The <strong>histogram</strong> below is the same rule run millions of times on an idealised
+          road, so the distribution appears in seconds rather than hours. Teal bars are those
+          simulated cascade sizes; the red line is the Borel(&mu;) prediction. The small ink ticks
+          under the axis are the cascades the circuit above has actually run &mdash; a handful of
+          individual results, dropped onto the law they came from.
+        </p>
+
+        <h3>Reading the gantry</h3>
+
+        <p>
+          Everything across the top is derived from the four road sliders. Only the fourth of these
+          numbers decides the distribution; the rest are the road conditions that produce it.
+        </p>
+
+        <dl class="defs">
+          <dt class="defs__term">Flow <em>q</em></dt>
+          <dd>
+            Cars per second past any fixed point, <em>q</em> = <em>k</em> &times; <em>v</em>. This is
+            the arrival rate the cascade sees.
+          </dd>
+
+          <dt class="defs__term">Density <em>k</em></dt>
+          <dd>
+            Cars per kilometre of road, simply the number of cars divided by the circuit length. How
+            crowded the lane is.
+          </dd>
+
+          <dt class="defs__term">Headway</dt>
+          <dd>
+            The average gap in time between one car passing a point and the next, 1/<em>q</em>. The
+            reciprocal of flow, given because seconds between cars is easier to picture than cars
+            per second. Compare it to the clearance time: when the headway drops near <em>D</em>,
+            &mu; is approaching 1.
+          </dd>
+
+          <dt class="defs__term"><span class="sym">&mu;</span> = <em>q</em> &times; <em>D</em></dt>
+          <dd>
+            The one number that matters: the expected number of cars a single braking car forces to
+            brake. The bar underneath runs from 0 to 1.5 with a tick at the critical value of 1, and
+            the caption names the regime. Below 1 cascades die out; at 1 they still end but with
+            infinite mean size; above 1 some never end.
+          </dd>
+
+          <dt class="defs__term">Mean cascade</dt>
+          <dd>
+            The expected number of cars in a cascade. Below criticality this is
+            1/(1&nbsp;&minus;&nbsp;&mu;), which is why it climbs so steeply as &mu; approaches 1 and
+            becomes infinite there. Above criticality it switches to the mean over cascades that do
+            clear, 1/(1&nbsp;&minus;&nbsp;&mu;<em>Q</em>), which is finite again &mdash; the
+            enormous ones have been removed from the average by never ending.
+          </dd>
+
+          <dt class="defs__term">Cascade ends</dt>
+          <dd>
+            The extinction probability <em>Q</em>: the chance a cascade terminates at all. It is
+            exactly 1 up to &mu;&nbsp;=&nbsp;1, and below 1 above that &mdash; at &mu;&nbsp;=&nbsp;1.2,
+            about a third of cascades never clear. It solves
+            <em>Q</em>&nbsp;=&nbsp;e<sup>&minus;&mu;(1&minus;<em>Q</em>)</sup>.
+          </dd>
+        </dl>
+
+        <h3>What the controls do</h3>
+
+        <p>
+          The first four sliders are four different ways of moving the same number. Since
+          &mu;&nbsp;=&nbsp;<em>q</em>&thinsp;&times;&thinsp;<em>D</em> and
+          <em>q</em>&nbsp;=&nbsp;<em>Nv</em>/<em>L</em>, the whole model is
+        </p>
+
+        <p class="display">&mu; = <em>N</em> <em>v</em> <em>D</em> / <em>L</em></p>
+
+        <p>
+          so more cars, a shorter loop, a higher speed or a slower disturbance all do exactly the
+          same thing. Any two settings with the same &mu; give the same distribution, which is worth
+          testing directly.
+        </p>
+
+        <dl class="defs">
+          <dt class="defs__term">Cars on circuit <em>N</em></dt>
+          <dd>How many cars share the lane. Raises density, and so flow, and so &mu;.</dd>
+
+          <dt class="defs__term">Circuit length <em>L</em></dt>
+          <dd>
+            The same cars on a shorter loop are a denser road, so shortening it raises &mu;. It is
+            the only slider that lowers &mu; as you increase it.
+          </dd>
+
+          <dt class="defs__term">Cruising speed <em>v</em></dt>
+          <dd>
+            Faster traffic delivers more cars per second into the disturbance. Note that it does not
+            change the density &mdash; only the rate at which that density is delivered.
+          </dd>
+
+          <dt class="defs__term">Clearance time <em>D</em></dt>
+          <dd>
+            How long one car takes to get through the disturbance: the service time. This is the
+            width of the window during which arriving cars get caught, so it scales &mu; directly
+            and is the quickest way to push the system over criticality.
+          </dd>
+
+          <dt class="defs__term">Braking events</dt>
+          <dd>
+            How often a new cascade is seeded, once the previous one has finished. This changes how
+            much you see per minute and <em>nothing</em> about the distribution &mdash; each cascade
+            is independent of when it started. Turn it up to gather circuit cascades faster.
+          </dd>
+
+          <dt class="defs__term">Time scale</dt>
+          <dd>
+            Wall-clock speed of the circuit only. The histogram samples independently of the
+            animation, so this does not make it fill any faster. Slow it down to watch a single
+            cascade catch cars one at a time.
+          </dd>
+        </dl>
+
+        <p>
+          <strong>Seed</strong> re-scatters the cars and restarts both samplers, so a given seed
+          reproduces a given run exactly. <strong>Clear samples</strong> empties the histogram
+          without touching the road &mdash; useful straight after changing a slider.
+          <strong>Log scale</strong> switches the vertical axis, which is the only way to see the
+          tail properly.
         </p>
 
         <h3>One lane is the point, not a shortcut</h3>

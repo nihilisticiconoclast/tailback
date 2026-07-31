@@ -485,6 +485,52 @@ canvas {
   color: var(--chalk);
 }
 
+/* Definition lists — metrics, controls, the colour key. The one place in the
+   explanation where the content genuinely is a list. Ruled, not boxed. */
+.defs {
+  margin: 0 0 var(--gap-4);
+  border-top: var(--hairline);
+}
+
+.defs__term {
+  font-family: var(--font-mono);
+  font-size: var(--step-0);
+  letter-spacing: 0.03em;
+  color: var(--chalk);
+  margin-top: var(--gap-3);
+}
+
+.defs dd {
+  margin: var(--gap-1) 0 0;
+  padding-bottom: var(--gap-3);
+  border-bottom: var(--hairline);
+  font-size: var(--step-1);
+  line-height: 1.55;
+}
+
+/* the car colours get their actual colour as a swatch */
+.defs__term--flow::before,
+.defs__term--amber::before,
+.defs__term--brake::before {
+  content: '';
+  display: inline-block;
+  width: 11px;
+  height: 6px;
+  margin-right: 9px;
+}
+
+.defs__term--flow::before {
+  background: var(--flow);
+}
+
+.defs__term--amber::before {
+  background: var(--amber);
+}
+
+.defs__term--brake::before {
+  background: var(--brake);
+}
+
 .note {
   margin: 0;
   font-size: var(--step--1);
