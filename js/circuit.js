@@ -216,6 +216,7 @@ export class Circuit {
       flow: css('--flow'),
       brake: css('--brake'),
       amber: css('--amber'),
+      mono: css('--font-mono'),
     };
 
     ctx.clearRect(0, 0, this.w, this.h);
@@ -256,7 +257,7 @@ export class Circuit {
     ctx.lineTo(0, ROAD_WIDTH / 2);
     ctx.stroke();
     ctx.fillStyle = this.jam ? theme.brake : theme.chalkFaint;
-    ctx.font = '600 9px ui-monospace, SFMono-Regular, Menlo, monospace';
+    ctx.font = `600 9px ${theme.mono}`;
     ctx.textAlign = 'center';
     ctx.fillText('DISTURBANCE', 0, ROAD_WIDTH / 2 + 13);
     ctx.restore();
@@ -270,8 +271,6 @@ export class Circuit {
     ctx.rotate(th);
     if (car.state === 'queued') {
       ctx.fillStyle = theme.brake;
-      ctx.shadowColor = theme.brake;
-      ctx.shadowBlur = 7;
     } else if (car.released > 0) {
       ctx.fillStyle = theme.amber;
       ctx.globalAlpha = 0.35 + 0.45 * (car.released / 1.6);
@@ -280,11 +279,7 @@ export class Circuit {
       ctx.globalAlpha = 0.85;
     }
     ctx.beginPath();
-    if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(-CAR_LENGTH / 2, -CAR_WIDTH / 2, CAR_LENGTH, CAR_WIDTH, 1.5);
-    } else {
-      ctx.rect(-CAR_LENGTH / 2, -CAR_WIDTH / 2, CAR_LENGTH, CAR_WIDTH);
-    }
+    ctx.rect(-CAR_LENGTH / 2, -CAR_WIDTH / 2, CAR_LENGTH, CAR_WIDTH);
     ctx.fill();
     ctx.restore();
   }
@@ -333,7 +328,7 @@ export class Circuit {
 
     ctx.globalAlpha = alpha;
     ctx.fillStyle = theme.chalkFaint;
-    ctx.font = '600 9px ui-monospace, SFMono-Regular, Menlo, monospace';
+    ctx.font = `600 9px ${theme.mono}`;
     ctx.textAlign = 'left';
     const label = tree.truncated
       ? `CASCADE ${served} / >${tree.size}  DEPTH ${tree.depth}`

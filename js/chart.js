@@ -39,8 +39,9 @@ export class Histogram {
       chalk: css('--chalk'),
       faint: css('--chalk-faint'),
       dim: css('--chalk-dim'),
-      brake: css('--brake'),
-      amber: css('--amber'),
+      observed: css('--observed'),
+      theory: css('--theory'),
+      mono: css('--font-mono'),
     };
 
     ctx.clearRect(0, 0, this.w, this.h);
@@ -76,7 +77,7 @@ export class Histogram {
     // gridlines and y labels
     ctx.strokeStyle = theme.grid;
     ctx.fillStyle = theme.faint;
-    ctx.font = '10px ui-monospace, SFMono-Regular, Menlo, monospace';
+    ctx.font = `10px ${theme.mono}`;
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
     ctx.lineWidth = 1;
@@ -93,8 +94,8 @@ export class Histogram {
     }
 
     // empirical bars
-    ctx.fillStyle = theme.brake;
-    ctx.globalAlpha = 0.55;
+    ctx.fillStyle = theme.observed;
+    ctx.globalAlpha = 0.72;
     const base = PAD.top + plotH;
     for (let n = 1; n <= nMax; n += 1) {
       if (empirical[n] <= 0) continue;
@@ -104,7 +105,7 @@ export class Histogram {
     ctx.globalAlpha = 1;
 
     // theoretical curve
-    ctx.strokeStyle = theme.amber;
+    ctx.strokeStyle = theme.theory;
     ctx.lineWidth = 1.6;
     ctx.beginPath();
     for (let n = 1; n <= nMax; n += 1) {
@@ -114,7 +115,7 @@ export class Histogram {
       else ctx.lineTo(x, y);
     }
     ctx.stroke();
-    ctx.fillStyle = theme.amber;
+    ctx.fillStyle = theme.theory;
     for (let n = 1; n <= nMax; n += 1) {
       if (barW < 6 && n % 2 === 0) continue;
       ctx.beginPath();

@@ -8,15 +8,27 @@
       name="description"
       content="A stylised highway circuit where one car's braking cascades into a tailback. Cascade sizes follow a Borel distribution."
     />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- The locked layer of the house style: palette and type, linked from the
+         one hosted copy so an upstream change reaches this page. Never inline. -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/nihilisticiconoclast/cuddly-lamp@main/assets/tokens.css"
+    />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/app.css" />
   </head>
-  <body>
+  <body data-seed="tailback">
+    <div class="doodle" id="doodle"></div>
+
     <div class="app">
       <header class="gantry">
         <div class="gantry__brand">
-          <h1 class="gantry__title">Tailback</h1>
-          <p class="gantry__sub">One car brakes. Count how many have to.</p>
+          <span class="sig" id="sig"></span>
+          <div>
+            <h1 class="gantry__title">Tailback</h1>
+            <p class="gantry__sub">One car brakes. Count how many have to.</p>
+          </div>
         </div>
 
         <div class="gantry__metrics">
@@ -100,6 +112,22 @@
       </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/gh/nihilisticiconoclast/cuddly-lamp@main/assets/tunnel-figure.js"></script>
+    <script>
+      // The fixed house mark in the masthead, and one seeded doodle in the
+      // margin. Seeded from the page, never from Math.random, so the scribble
+      // is this project's and stays put across reloads.
+      (function () {
+        if (!window.TunnelFigure) return;
+        var seed = document.body.dataset.seed || location.pathname || document.title;
+        document.getElementById('sig').innerHTML = TunnelFigure.tunnelFigureSVG(null, {
+          variant: 'mark',
+        });
+        var doodle = document.getElementById('doodle');
+        doodle.innerHTML = TunnelFigure.tunnelFigureSVG(seed, { variant: 'doodle' });
+        TunnelFigure.placeDoodle(doodle, { seed: seed });
+      })();
+    </script>
     <script type="module" src="js/main.js"></script>
   </body>
 </html>

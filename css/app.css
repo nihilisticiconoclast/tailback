@@ -7,6 +7,11 @@
 html,
 body {
   height: 100%;
+  /* The margin doodle is positioned to bleed into the gutter. tokens.css clips
+     it on <html>, but that alone leaves the page horizontally scrollable once
+     <body> is the offset parent, so clip here too. `clip` rather than `hidden`:
+     `hidden` would make <body> a scroll container and cut off the histogram. */
+  overflow-x: clip;
 }
 
 body {
@@ -33,24 +38,33 @@ body {
   flex-wrap: wrap;
   gap: 0;
   border-bottom: var(--hairline);
-  background: var(--asphalt-1);
+  background: transparent;
 }
 
 .gantry__brand {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--gap-2);
   padding: var(--gap-2) var(--gap-3);
   border-right: var(--hairline);
   min-width: 210px;
 }
 
+/* The fixed house mark, kept small and in the masthead corner. Sized down from
+   the token default: this is an instrument panel, not a page header. */
+.sig {
+  width: 46px;
+  flex: none;
+}
+
 .gantry__title {
   margin: 0;
   font-size: var(--step-2);
-  font-weight: 700;
-  letter-spacing: 0.22em;
+  font-weight: 560;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  line-height: 1.1;
 }
 
 .gantry__sub {
@@ -83,7 +97,7 @@ body {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--chalk-faint);
-  white-space: nowrap;
+  text-wrap: balance;
 }
 
 .metric__value {
@@ -144,7 +158,7 @@ body {
 
 .rail {
   border-right: var(--hairline);
-  background: var(--asphalt-1);
+  background: transparent;
   padding: var(--gap-3);
   display: flex;
   flex-direction: column;
@@ -182,7 +196,7 @@ body {
   font-family: var(--font-mono);
   font-size: var(--step-0);
   font-variant-numeric: tabular-nums;
-  color: var(--amber);
+  color: var(--incident);
 }
 
 .control__note {
@@ -230,7 +244,7 @@ input[type='range']::-moz-range-thumb {
 }
 
 input[type='range']:focus-visible {
-  outline: 2px solid var(--amber);
+  outline: 2px solid var(--incident);
   outline-offset: 3px;
 }
 
@@ -260,13 +274,13 @@ button:hover,
 }
 
 button[aria-pressed='true'] {
-  color: var(--asphalt-0);
-  background: var(--amber);
-  border-color: var(--amber);
+  color: var(--paper);
+  background: var(--ink);
+  border-color: var(--ink);
 }
 
 button:focus-visible {
-  outline: 2px solid var(--amber);
+  outline: 2px solid var(--incident);
   outline-offset: 2px;
 }
 
@@ -290,7 +304,7 @@ button:focus-visible {
 }
 
 .seed input:focus-visible {
-  outline: 2px solid var(--amber);
+  outline: 2px solid var(--incident);
   outline-offset: 1px;
 }
 
@@ -375,14 +389,14 @@ canvas {
 .legend__swatch {
   width: 12px;
   height: 3px;
-  background: var(--amber);
+  background: var(--theory);
 }
 
 .legend__swatch--observed {
-  background: var(--brake);
+  background: var(--observed);
   height: 9px;
   width: 5px;
-  opacity: 0.55;
+  opacity: 0.75;
 }
 
 .note {

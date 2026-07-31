@@ -136,6 +136,13 @@ controls.sync(params);
 render();
 requestAnimationFrame(frame);
 
+// The canvases set their label font from --font-mono, which is a webfont. The
+// first draw can land before it arrives, and a paused page would keep the
+// fallback indefinitely, so redraw once it is ready.
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(render);
+}
+
 if (!running) {
   el('btn-play').setAttribute('aria-pressed', 'false');
   el('btn-play').textContent = 'Run';

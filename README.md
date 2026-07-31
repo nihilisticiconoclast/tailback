@@ -69,11 +69,20 @@ simulator's empirical law matches the closed form.
 Settings → Pages → deploy from branch, root directory. `.nojekyll` is present so
 the asset paths are served untouched. Nothing else is needed.
 
+The page pulls the house style — the palette, the three typefaces and the
+signature figure — from the shared Tunnel assets on jsDelivr at runtime, so it
+needs outbound network access to `cdn.jsdelivr.net` and `fonts.googleapis.com`.
+Offline it still runs and stays legible; it falls back to system fonts and the
+canvases lose their colours, since those are read from the linked custom
+properties.
+
 ## Layout
 
 ```
-index.html          markup: gantry, control rail, two canvas panels
-css/tokens.css      palette, type, spacing — the only file with colours in it
+index.html          markup: gantry, control rail, two canvas panels; links the
+                    shared Tunnel tokens.css and tunnel-figure.js from the CDN
+css/tokens.css      the house palette mapped onto road semantics — the only
+                    file with colours in it
 css/app.css         layout and components
 js/borel.js         PMF in log space, moments, extinction probability
 js/rng.js           seeded RNG, Poisson sampler
@@ -91,10 +100,24 @@ The maths is separated from the rendering deliberately: `borel.js`, `queue.js`,
 
 ## Restyling
 
-Every colour lives in `css/tokens.css` and nothing else hard-codes one. Canvas
-drawing reads the same custom properties through `getComputedStyle`, so swapping
-that one file reskins both the DOM and the two canvases. Replace the font stacks
-in the same place.
+The page wears the in-house **Tunnel** style. Its locked layer — the exact
+palette and the Fraunces / Public Sans / IBM Plex Mono type — is linked from the
+one hosted copy rather than vendored here, so a change upstream reaches this
+page. Nothing in this repo hard-codes a hex.
+
+`css/tokens.css` is the whole reskin surface: it says what each identity colour
+*means* on a road, deriving every value from the linked set.
+
+```
+contour tints   the carriageway and its markings
+incident teal   traffic still moving, and the observed distribution
+amber           a scalar field running high — mu near capacity, cars recovering
+route red       the cascade, and the Borel law drawn through it
+```
+
+Canvas drawing reads those same custom properties through `getComputedStyle`,
+fonts included, so editing that one file reskins the DOM and both canvases
+together.
 
 ## Where to take it
 

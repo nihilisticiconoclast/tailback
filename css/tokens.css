@@ -1,33 +1,55 @@
 /*
- * Tokens.
+ * Tokens — the Tunnel house identity, mapped onto this app's semantics.
  *
- * The palette is taken from the subject: wet asphalt at night, chalk road
- * markings, matrix-sign amber, brake red, and a desaturated sea green for
- * traffic that is still moving. Amber is reserved for theory, red for
- * observation, green for free flow; nothing else is coloured.
+ * The locked layer is deliberately NOT defined here. The palette and the three
+ * typefaces are linked from the shared Tunnel tokens.css on the CDN (see
+ * index.html); this file only says what each identity colour MEANS on a road.
  *
- * Replace this file wholesale to reskin. Nothing outside it hard-codes a
- * colour, and app.css reads every value from here.
+ * So: never hard-code a hex below. Every value derives from the locked set
+ * (--paper --ink --contour --index --incident --amber --route), which is what
+ * lets an upstream change to the house style reach this page too.
+ *
+ * The colour grammar, once:
+ *   contour tints   the carriageway and its markings — map furniture, no more
+ *   incident teal   the measured world: traffic still moving, and the observed
+ *                   distribution it produces
+ *   amber           a scalar field running high — mu approaching capacity, and
+ *                   cars still recovering from the disturbance
+ *   route red       the cascade, and the Borel law drawn as one line through it
+ *
+ * app.css and the two canvases read every colour from here and nothing else
+ * hard-codes one, so this file is still the whole reskin surface.
  */
 
 :root {
-  --asphalt-0: #0f1518;
-  --asphalt-1: #161f23;
-  --asphalt-2: #1e2a30;
-  --road: #242f35;
-  --kerb: #2e3d45;
+  /* Surfaces. Paper throughout — the panels are ruled, never boxed, so these
+     are tints of the ground rather than cards sitting on top of it. */
+  --asphalt-0: var(--paper);
+  --asphalt-1: color-mix(in srgb, var(--contour) 5%, var(--paper));
+  --asphalt-2: color-mix(in srgb, var(--contour) 10%, var(--paper));
+  --road: color-mix(in srgb, var(--contour) 17%, var(--paper));
+  --kerb: color-mix(in srgb, var(--contour) 34%, var(--paper));
 
-  --chalk: #e9ece9;
-  --chalk-dim: #9aabad;
-  --chalk-faint: #61737a;
+  /* Road markings and type, darkest to lightest. */
+  --chalk: var(--ink);
+  --chalk-dim: var(--contour);
+  --chalk-faint: color-mix(in srgb, var(--contour) 62%, var(--paper));
 
-  --amber: #f0a92b;
-  --brake: #ff4d3d;
-  --flow: #7fb0a8;
+  /* The three signals. --amber is inherited from the locked layer unchanged:
+     congestion is exactly the "scalar field running high" it is reserved for. */
+  --flow: var(--incident);
+  --brake: var(--route);
 
-  --font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  /* The chart's two series, named for what they are rather than what colour
+     they happen to be. Observed is the measured world; theory is the route. */
+  --observed: var(--incident);
+  --theory: var(--route);
 
+  --font-ui: var(--font-body);
+  --font-mono: var(--font-data);
+
+  /* A dense instrument panel wants a tighter scale than the CDN's reading
+     defaults. The families are locked; the sizes are ours. */
   --step--1: 0.7rem;
   --step-0: 0.8125rem;
   --step-1: 0.9375rem;
