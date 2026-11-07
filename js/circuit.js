@@ -347,14 +347,19 @@ export class Circuit {
       const c = this.cascade;
       for (let j = 0; j < c.queue.length; j += 1) {
         const car = c.queue[j];
-        const target = ((this.stopLine - j * pitch) % P + P) % P;
-        const gap = this.fwd(car.s, target);
-        if (gap > 0 && gap < P * 0.5) car.s = (car.s + Math.min(gap, ds)) % P;
-        // Caught, but possibly still some way back: a car committed to stopping
-        // can be most of a cascade's length away when it is counted. Only mark
-        // it stopped once it is actually in its slot, so the red in the picture
-        // means what the legend says it means.
-        car.atSlot = this.fwd(car.s, target) <= ds;
+        const distToStop = this.distanceToStop(car.s);
+        const targetDistToStop = j * pitch;
+
+        if (distToStop > targetDistToStop) {
+            const gap = distToStop - targetDistToStop;
+            car.s = (car.s + Math.min(gap, ds)) % P;
+        } else if (distToStop < targetDistToStop - ds) {
+            const target = ((this.stopLine - targetDistToStop) % P + P) % P;
+            const gap = this.fwd(car.s, target);
+        if (gap > 0 && gap < P - 20) car.s = (car.s + Math.min(gap, ds)) % P;
+        }
+
+        car.atSlot = Math.abs(this.distanceToStop(car.s) - targetDistToStop) <= ds;
       }
 
       // Cars the cascade did not catch are left alone. They reach the
@@ -372,7 +377,7 @@ export class Circuit {
       if (car.state === 'queued') continue;
       const gap = this.fwd(car.s, car.nominal);
       // gap near a full lap means the rendered car is essentially on its mark
-      car.s = gap > P * 0.5 ? car.nominal : (car.s + Math.min(gap, CATCHUP * ds)) % P;
+      car.s = gap > P * 0.9 ? car.nominal : (car.s + Math.min(gap, CATCHUP * ds)) % P;
     }
   }
 
