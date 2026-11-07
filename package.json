@@ -8,5 +8,8 @@
     "test": "node test/smoke.mjs",
     "serve": "python3 -m http.server 8000"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "playwright": "^1.65.0"
+  }
 }

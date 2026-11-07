@@ -1,0 +1,31 @@
+--- js/circuit.js
++++ js/circuit.js
+@@ -254,12 +254,16 @@
+       for (let j = 0; j < c.queue.length; j += 1) {
+         const car = c.queue[j];
+-        const target = ((this.stopLine - j * pitch) % P + P) % P;
+-        const gap = this.fwd(car.s, target);
+-        if (gap > 0 && gap < P * 0.5) car.s = (car.s + Math.min(gap, ds)) % P;
++        const targetDistToStop = j * pitch;
++        const carDistToStop = this.fwd(car.s, this.stopLine);
++        if (carDistToStop > targetDistToStop) {
++          const gap = carDistToStop - targetDistToStop;
++          car.s = (car.s + Math.min(gap, ds)) % P;
++          car.atSlot = gap <= ds;
++        } else {
++          car.atSlot = true;
++        }
+         // Caught, but possibly still some way back: a car committed to stopping
+         // can be most of a cascade's length away when it is counted. Only mark
+         // it stopped once it is actually in its slot, so the red in the picture
+         // means what the legend says it means.
+-        car.atSlot = this.fwd(car.s, target) <= ds;
+       }
+
+@@ -279,5 +283,5 @@
+       const gap = this.fwd(car.s, car.nominal);
+       // gap near a full lap means the rendered car is essentially on its mark
+-      car.s = gap > P * 0.5 ? car.nominal : (car.s + Math.min(gap, CATCHUP * ds)) % P;
++      car.s = gap > P * 0.9 ? car.nominal : (car.s + Math.min(gap, CATCHUP * ds)) % P;
+     }
+   }

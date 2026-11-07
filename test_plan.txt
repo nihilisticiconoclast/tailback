@@ -1,0 +1,20 @@
+1. We need to complete three features based on the prompt "plan, and execute, improvements to the completeness of the tool":
+  - Borel-Tanner Extension (slider to adjust k brakers)
+  - Duration Chart (A busy period of N cars lasts N*D seconds, so time distribution is rescaled Borel)
+  - Goodness of Fit (Chi-squared or Kolmogorov-Smirnov readout)
+
+2. Fix the visualisation:
+  - We've modified `js/circuit.js` to change how it compares distance wrapping (`gap < P - 20`).
+  Wait, what if `Math.min(gap, CATCHUP * ds)` causes issues when `gap` is evaluated differently?
+  The original code:
+  ```javascript
+  const gap = this.fwd(car.s, car.nominal);
+  // gap near a full lap means the rendered car is essentially on its mark
+  car.s = gap > P * 0.5 ? car.nominal : (car.s + Math.min(gap, CATCHUP * ds)) % P;
+  ```
+  If `gap` was near `P * 0.5`, wait, `this.fwd(a, b)` returns the forward distance. If a car is at `0.1P` and nominal is `0.9P`, gap is `0.8P`. If gap is `0.8P`, it means the rendered car is *ahead* of nominal?
+  No, `car.s` is behind `car.nominal`, so `fwd(car.s, car.nominal)` is the distance it has to catch up. If it is e.g. 1 lap behind (due to wrapping), `gap` would be small but actually it should be large. Wait, no, `fwd` returns `[0, P)`. If `car.nominal` is a bit behind `car.s` because of rounding or just barely crossing the finish line, `fwd` will be `P - small_number`.
+  Ah, so `gap > P * 0.5` meant "if the gap is > half a lap, it's probably because it just overshot slightly, so snap it to nominal".
+  If `P * 0.5` is the threshold, in large queues on a small track, a queue could stretch > `0.5 P`.
+  Then `gap` would be `> 0.5 P`, and the car would snap to nominal instead of catching up!
+  This is EXACTLY the bug!
